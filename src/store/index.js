@@ -26,15 +26,18 @@ export default createStore({
   actions: {
     getTasks({commit}){
       const tasks = []
-      db.collection('tasks').get().then(snapshot =>{
-        snapshot.forEach(document => {
-          /*console.log(document.data());*/
-          let task = document.data()
-              task.id = document.id
-              tasks.push(task)
+      db.collection('tasks')
+        .get()
+        .then(snapshot => {
+          snapshot.docs.map(doc => {
+            console.log(doc.data());
+            let task = {};
+            task.id = doc.id;
+            task.name = doc.data().name;
+            tasks.push(task)
+          })
+          commit('setTasks', tasks)
         })
-      })
-      commit('setTasks', tasks)
     },
     getTask({commit}, id){
       db.collection('tasks').doc(id).get().then(document => {
